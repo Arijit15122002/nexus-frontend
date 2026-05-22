@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 
 export default function MainLayout() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#111111]">
+    <div className="min-h-screen bg-white  dark:bg-[#111111] transition-all duration-500">
 
       <Navigation />
 

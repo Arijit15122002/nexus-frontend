@@ -14,7 +14,7 @@ export default function Navigation() {
 
   return (
 
-    <nav className="w-full fixed top-0 left-0 z-50 px-8 backdrop-blur-xl transition-all duration-500 bg-white/80 border-black/[0.05] dark:bg-[#111111]/90 dark:border-white/[0.07]">
+    <nav className="w-full fixed top-0 left-0 z-50 px-8 backdrop-blur-xl transition-all duration-500 bg-white  dark:bg-[#111111]">
 
       <div className="max-w-[1400px] mx-auto h-[80px] flex items-center justify-between">
 
@@ -50,14 +50,18 @@ export default function Navigation() {
           {/* Login */}
           <Link to="/login">
 
-            <motion.button
-              whileTap={{ scale: 0.96 }}
-              className="px-[28px] pt-[9px] pb-[11px] rounded-3xl border text-[13px] exo tracking-[1px] transition-all duration-300 text-black/70 border-black/10 hover:bg-black/[0.03] dark:text-white/70 dark:border-white/[0.12] dark:hover:bg-white/[0.04] dark:hover:text-white"
-            >
-              Login
-            </motion.button>
+  <motion.button
+    whileTap={{ scale: 0.96 }}
+    className={`cursor-pointer px-[35px] pt-[9px] pb-[11px] rounded-3xl border text-[13px] exo tracking-[1px] transition-all duration-300 ${
+      pathname === "/login"
+        ? "bg-gradient-to-r from-blue-400 to-blue-600 text-white font-semibold border-blue-700 shadow-[0_0_25px_rgba(0, 177, 255, 0.95)]"
+        : "text-white bg-gradient-to-br from-blue-500 to-blue-600 border-black/10 hover:bg-black/[0.03] dark:text-white/70 dark:border-white/[0.12] dark:hover:bg-white/[0.04] dark:hover:text-white"
+    }`}
+  >
+    Login
+  </motion.button>
 
-          </Link>
+</Link>
 
           {/* Register */}
           {/* <Link to="/register">
