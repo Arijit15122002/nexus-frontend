@@ -6,7 +6,7 @@ import AiHead from "../assets/ai-head.png";
 
 const Home = () => {
   return (
-    <div className="relative w-full h-[100svh] overflow-hidden bg-[#0a0a0a]">
+    <div className="relative w-full h-[100dvh] overflow-hidden bg-[#0a0a0a]">
 
       {/* BEYOND TEXT */}
       <motion.div
