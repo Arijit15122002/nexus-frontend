@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.orbitron {
+  font-family: "Orbitron", sans-serif;
+}
+
+.exo {
+  font-family: "Exo 2", sans-serif;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.5); }
+  50%       { opacity: 0.85; transform: scale(1); }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s infinite;
+}
