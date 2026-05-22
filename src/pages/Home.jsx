@@ -46,7 +46,7 @@ const Home = () => {
             </div>
           </div>
 
-          {/* CTA BUTTON */}
+
           <div className="group relative w-fit h-[62px] px-[22px] rounded-full overflow-hidden cursor-pointer flex items-center gap-4 border border-orange-500/20 bg-[#0f0f0f]/90 backdrop-blur-xl transition-all duration-500 hover:scale-[1.04] hover:border-orange-400 hover:shadow-[0_0_50px_rgba(255,120,0,0.35)]">
             {/* Glow Background */}
             <div className="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 opacity-0 group-hover:opacity-100 transition-all duration-500" />
