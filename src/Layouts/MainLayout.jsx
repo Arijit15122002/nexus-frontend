@@ -16,7 +16,7 @@ export default function MainLayout() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   return (
-    <div className="flex min-h-screen bg-white dark:bg-[#232323] transition-all duration-500">
+    <div className="flex h-[100dvh] bg-white dark:bg-[#232323] transition-all duration-500">
       {/* Top Navigation */}
       <div className="fixed top-0 left-0 z-20 w-full h-18 md:h-20">
         <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen} />

@@ -73,7 +73,7 @@ export default function Login() {
             <div className="text-xs">Forgot your password?</div>
           </div>
 
-          <button className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 rounded-2xl hover:bg-[#111111] dark:bg-[#efefef] dark:text-black">Sign in</button>
+          <button className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 rounded-2xl hover:bg-blue-500 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer">Sign in</button>
         </div>
       </div>
     </div>
