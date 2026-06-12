@@ -12,7 +12,10 @@ export default function Login() {
 
       <div className={`${deviceType == "mobile" ? "" : "w-[1/2]"} relative`}>
         <div className="w-[100px] h-[100px] absolute top-[40%] left-[40%] bg-blue-300 dark:bg-blue-500 rounded"/>
-        <div className="rounded-3xl w-40 h-20 top-0 left-0 bg-[#dedede] dark:bg-[#565656] absolute"/>
+        {
+          deviceType != "mobile" ? 
+          <div className="rounded-3xl w-40 h-20 top-0 left-0 bg-[#dedede] dark:bg-[#565656] absolute"/> : <></>
+        }
         <div
         className={`${deviceType == "mobile" ? "" : "w-full"} flex flex-col justify-center items-center gap-2 exo text-[#232323] dark:text-[#fefefe] px-4 py-14 backdrop-blur-3xl rounded-3xl`}
       >
