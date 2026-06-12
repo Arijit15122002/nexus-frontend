@@ -68,14 +68,14 @@ export default function Login() {
             <div className="flex flex-row items-center gap-2 w-full text-sm md:text-md">
               <Mail size={16} /> Email
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none" />
+            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
           </div>
           <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
             <div className="flex flex-row items-center gap-2 text-sm md:text-md">
               <KeyIcon size={16} />
               Password
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none" />
+            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
             <div className="text-xs">Forgot your password?</div>
           </div>
 
