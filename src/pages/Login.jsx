@@ -7,11 +7,14 @@ export default function Login() {
   const deviceType = useSelector((state) => state.device.deviceType);
 
   return (
-    <div className="w-full h-full  flex flex-row items-center justify-center">
+    <div className="w-full h-full flex flex-row items-center justify-center">
       <div className={`${deviceType == "mobile" ? "hidden" : "flex"}`}></div>
 
-      <div
-        className={`${deviceType == "mobile" ? "" : ""} flex flex-col justify-end-safe items-center gap-2 exo text-[#232323] dark:text-[#fefefe]`}
+      <div className={`${deviceType == "mobile" ? "" : "w-[1/2]"} relative`}>
+        <div className="w-[100px] h-[100px] absolute top-[40%] left-[40%] bg-blue-300 dark:bg-blue-500 rounded"/>
+        <div className="rounded-3xl w-40 h-20 top-0 left-0 bg-[#dedede] dark:bg-[#565656] absolute"/>
+        <div
+        className={`${deviceType == "mobile" ? "" : "w-full"} flex flex-col justify-center items-center gap-2 exo text-[#232323] dark:text-[#fefefe] px-4 py-14 backdrop-blur-3xl rounded-3xl`}
       >
         {/* icon */}
         <svg
@@ -57,24 +60,25 @@ export default function Login() {
           if you're a new member
         </div>
 
-        <div className="mt-4 px-6 py-8 flex flex-col gap-5 rounded-xl">
-          <div className="flex flex-col gap-1">
-            <div className="flex flex-row items-center gap-2">
+        <div className="mt-4 px-6 py-8 flex flex-col items-center gap-5 rounded-xl">
+          <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
+            <div className="flex flex-row items-center gap-2 w-full">
               <Mail size={16} /> Email
             </div>
-            <input type="text" className="px-3 py-1 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none" />
+            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none" />
           </div>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
             <div className="flex flex-row items-center gap-2">
               <KeyIcon size={16} />
               Password
             </div>
-            <input type="text" className="px-3 py-1 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none" />
+            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none" />
             <div className="text-xs">Forgot your password?</div>
           </div>
 
-          <button className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 rounded-2xl hover:bg-blue-500 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer">Sign in</button>
+          <button className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl hover:bg-blue-600 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]">Sign in</button>
         </div>
+      </div>
       </div>
     </div>
   );

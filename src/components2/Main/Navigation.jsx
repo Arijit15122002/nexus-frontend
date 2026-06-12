@@ -10,7 +10,7 @@ export default function Navigation({menuOpen, setMenuOpen}) {
   const [loggedIn, setLoggedIn] = useState(false);
 
   const location = useLocation();
-  const isLoginPage = location.pathname === "/login";
+  const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
 
   const deviceType = useSelector((state) => state.device.deviceType);
   const theme = useSelector((state) => state.theme.theme);
@@ -89,14 +89,15 @@ export default function Navigation({menuOpen, setMenuOpen}) {
           {/* search */}
 
           {/* menu */}
-          <div className="p-2.5 rounded-full bg-[#fafafa] dark:bg-transparent dark:text-white shadow-[0_8px_20px_rgba(0,0,0,0.1)]" onClick={() => setMenuOpen(true)}>
+          <div className="p-2.5 rounded-full bg-[#fafafa] dark:bg-transparent dark:text-white shadow-[0_8px_20px_rgba(0,0,0,0.1)] cursor-pointer" onClick={() => setMenuOpen(true)}>
             <Menu size={18} strokeWidth={0.8}/>
           </div>
 
         </div>
 
-        <div className={deviceType == "mobile" ? "hidden" : "flex flex-row gap-2 mr-10 lg:mr-24"}>
-          <NavLink className={`${isLoginPage ? "hidden" : "flex"} group flex-row justify-center items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 text-white border border-blue-400/20 shadow-[0_8px_50px_rgba(59,130,246,0.2)] transition-all duration-300 hover:shadow-[0_15px_80px_rgba(59,130,246,0.5)]`}>
+        <div 
+        className={deviceType == "mobile" ? "hidden" : "flex flex-row gap-2 mr-10 lg:mr-24 z-50"}>
+        <NavLink to={"/login"} className={`${isLoginPage ? "hidden" : "flex"} group flex-row justify-center items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 text-white border border-blue-400/20 shadow-[0_8px_50px_rgba(59,130,246,0.2)] transition-all duration-300 hover:shadow-[0_15px_80px_rgba(59,130,246,0.5)]`}>
             <LogIn
               size={18}
               className="transition-transform duration-300 group-hover:translate-x-0.5"

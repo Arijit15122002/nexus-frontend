@@ -47,7 +47,7 @@ export default function MainLayout() {
           <div className="h-full w-full relative">
             {/* close button */}
             <div
-              className="h-18 flex flex-row justify-end items-center"
+              className="h-18 flex flex-row justify-end items-center cursor-pointer"
               onClick={() => setMenuOpen(false)}
             >
               <div className="mr-6 p-2.5 rounded-full bg-[#fafafa] dark:bg-transparent dark:text-white shadow-[0_8px_20px_rgba(0,0,0,0.1)]">
