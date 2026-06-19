@@ -1,16 +1,47 @@
-import { Key, KeyIcon, Mail, User } from 'lucide-react';
-import React from 'react'
-import { useSelector } from 'react-redux';
+import axios from "axios";
+import { Eye, EyeOff, Key, KeyIcon, Mail, User } from 'lucide-react';
+import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { loginSuccess } from '../redux/slices/authSlice';
 
 export default function Register() {
 
   const deviceType = useSelector((state) => state.device.deviceType);
   const theme = useSelector((state) => state.theme.theme);
+  const dispatch = useDispatch();
+  const [ username, setUsername ] = useState("");
+  const [ email, setEmail ] = useState("");
+  const [ password, setPassword ] = useState("");
+  const form = { username, email, password };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const submit = async () => {
+    
+    try{
+      console.log(form)
+      const response = await axios.post("https://nexus-backend-7v2b.onrender.com/auth/register", form);
+      const token = response.data.token;
+
+      console.log(token);
+
+      dispatch(loginSuccess(token));
+      if( token != null ) {
+        window.location.href = "/chat";
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
 
   return (
     <div className="w-full h-full flex flex-row items-center justify-center">
-      <div className={`${deviceType == "mobile" ? "hidden" : "flex"}`}></div>
+      <div className={`${deviceType == "mobile" ? "hidden" : "flex"}`}>
+        
+      </div>
 
       <div className={`${deviceType == "mobile" ? "" : "w-[1/2]"} relative`}>
         <div className="w-[100px] h-[100px] absolute top-[40%] left-[70%] bg-orange-300 dark:bg-orange-500 rounded-full"/>
@@ -65,33 +96,67 @@ export default function Register() {
         </div>
 
         <div className="mt-4 px-6 py-8 flex flex-col items-center gap-3 rounded-xl">
-          <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
-            <div className="flex flex-row items-center gap-2 w-full text-sm md:text-md ">
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-1 sm:w-80 lg:w-50 min-w-[300px]">
+            <div className="pl-4  flex flex-row items-center gap-2 w-full text-sm lg:text-md ">
               <User size={16} /> Username
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+            <input 
+              type="text" 
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm lg:text-md" />
           </div>
-          <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
-            <div className="flex flex-row items-center gap-2 w-full text-sm md:text-md">
+          <div className="flex flex-col gap-1 sm:w-80 lg:w-50 min-w-[300px]">
+            <div className="pl-4  flex flex-row items-center gap-2 w-full text-sm lg:text-md">
               <Mail size={16} /> Email
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+            <input 
+              type="text" 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm lg:text-md" />
+
           </div>
-          <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
-            <div className="flex flex-row items-center gap-2 text-sm md:text-md">
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1 sm:w-80 lg:w-50 min-w-[300px]">
+            <div className="pl-4  flex flex-row items-center gap-2 text-sm lg:text-md">
               <KeyIcon size={16} />
               Password
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+            <div className="relative">
+              <input 
+              type={showPassword ? "text" : "password"} 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm lg:text-md" />
+              <div 
+                className="absolute right-[10px] top-0 translate-y-[60%] cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+              {
+                showPassword ? <Eye size={16}/> : <EyeOff size={16}/>
+              }
+              </div>
+            </div>
           </div>
-          <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
-            <div className="flex flex-row items-center gap-2 text-sm md:text-md w-full">
+          {/* <div className="flex flex-col gap-1 sm:w-80 lg:w-50 min-w-[300px]">
+            <div className="pl-4 pb-0.5 flex flex-row items-center gap-2 text-sm lg:text-md w-full">
               <Key size={16} /> Confirm Password
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+            <input 
+              type="text" 
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm lg:text-md" />
+          </div> */}
           </div>
 
-          <button className=" bg-[#232323] text-[#eeeeee] mt-14 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl hover:bg-blue-600 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]">Register</button>
+          <button 
+            onClick={submit}
+            className=" bg-[#232323] text-[#eeeeee] mt-14 md:mt-6 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl hover:bg-blue-600 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]"
+          >Register</button>
         </div>
       </div>
       </div>

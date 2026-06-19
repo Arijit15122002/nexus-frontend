@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import alphabet from "../../icons/alphabet.png";
 import alphabet2 from "../../icons/alphabet2.png";
+import user_light from "../../icons/user_light.png";
+import user_dark from "../../icons/user_dark.png";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { isAction } from "redux";
@@ -15,6 +17,9 @@ export default function Navigation({menuOpen, setMenuOpen}) {
   const deviceType = useSelector((state) => state.device.deviceType);
   const theme = useSelector((state) => state.theme.theme);
 
+  const isAuthenticated = useSelector(
+    (state) => state.auth.isAuthenticated
+  );
 
   return (
     <>
@@ -57,8 +62,8 @@ export default function Navigation({menuOpen, setMenuOpen}) {
         </div>
 
         {/* logo */}
-        <div className={`${deviceType == "mobile" ? "hidden" : "flex"} ml-16 md:ml-20 lg:ml-24 items-end h-full rammetto text-3xl px-4 relative transition-all duration-300`}>
-          {theme == "dark" ? (
+        <div className={`${deviceType == "mobile" ? "hidden" : "flex"} ml-16 md:ml-20 lg:ml-24 items-end h-full rammetto text-4xl px-4 relative transition-all duration-300`}>
+          {/* {theme == "dark" ? (
             <>
               <img
                 src={alphabet2}
@@ -74,9 +79,10 @@ export default function Navigation({menuOpen, setMenuOpen}) {
                 className="absolute bottom-2 w-10 h-10"
               />
             </>
-          )}
-          <span className="pl-10 rammetto font-stretch-200% text-[#343434] dark:text-[#fefefe]">
-            rka
+          )} */}
+          <span className="pl-10 anton font-stretch-200% text-[#343434] dark:text-[#fefefe]">O</span>
+          <span className="anton font-stretch-200% text-[#343434] dark:text-[#fefefe]">
+            RKA
           </span>
         </div>
 
@@ -88,6 +94,16 @@ export default function Navigation({menuOpen, setMenuOpen}) {
           
           {/* search */}
 
+          {/* profile */}
+          <div className=" bg-blue-100 dark:bg-[#232323] shadow-[0_8px_20px_rgba(0,0,0,0.1)] p-2.5 rounded-full">
+          <img 
+            src={theme == "dark" ? user_dark : user_light} 
+            className="w-4 h-4" alt="" />
+          </div>
+
+          {/* divider */}
+          <div className="h-[40px] w-[0.5px] mx-2 rounded-full bg-[#898989] dark:bg-[#acacac]"/>
+
           {/* menu */}
           <div className="p-2.5 rounded-full bg-[#fafafa] dark:bg-transparent dark:text-white shadow-[0_8px_20px_rgba(0,0,0,0.1)] cursor-pointer" onClick={() => setMenuOpen(true)}>
             <Menu size={18} strokeWidth={0.8}/>
@@ -95,8 +111,16 @@ export default function Navigation({menuOpen, setMenuOpen}) {
 
         </div>
 
-        <div 
-        className={deviceType == "mobile" ? "hidden" : "flex flex-row gap-2 mr-10 lg:mr-24 z-50"}>
+        <div className={`${deviceType == "mobile" ? "hidden" : "flex flex-row gap-2"} mx-10`}>
+        {
+          isAuthenticated ? 
+          <><div className=" bg-blue-100 dark:bg-[#232323] shadow-[0_8px_20px_rgba(0,0,0,0.1)] p-2.5 rounded-full">
+          <img 
+            src={theme == "dark" ? user_dark : user_light} 
+            className="w-4 h-4" alt="" />
+          </div></> : 
+          <><div 
+        className="flex flex-row gap-2 mr-10 lg:mr-24 z-50">
         <NavLink to={"/login"} className={`${isLoginPage ? "hidden" : "flex"} group flex-row justify-center items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 text-white border border-blue-400/20 shadow-[0_8px_50px_rgba(59,130,246,0.2)] transition-all duration-300 hover:shadow-[0_15px_80px_rgba(59,130,246,0.5)]`}>
             <LogIn
               size={18}
@@ -106,6 +130,8 @@ export default function Navigation({menuOpen, setMenuOpen}) {
               Login
             </span>
           </NavLink>
+        </div></>
+        }
         </div>
       </div>
     </>

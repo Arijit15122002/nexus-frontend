@@ -1,10 +1,37 @@
-import { Key, KeyIcon, Mail } from "lucide-react";
-import { useSelector } from "react-redux";
+import axios from "axios";
+import { Eye, EyeClosed, EyeOff, KeyIcon, Mail } from "lucide-react";
+import { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
+import { loginSuccess } from "../redux/slices/authSlice";
 
 export default function Login() {
   const theme = useSelector((state) => state.theme.theme);
   const deviceType = useSelector((state) => state.device.deviceType);
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const form = { email, password };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const submit = async () => {
+    
+    try{
+      const response = await axios.post("https://nexus-backend-7v2b.onrender.com/auth/login", form);
+      const token = response.data.token;
+
+      dispatch(loginSuccess(token));
+      if( token != null ) {
+        window.location.href = "/chat";
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+    
+  }
 
   return (
     <div className="w-full h-full flex flex-row items-center justify-center">
@@ -65,21 +92,43 @@ export default function Login() {
 
         <div className="mt-4 px-6 py-8 flex flex-col items-center gap-5 rounded-xl">
           <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
-            <div className="flex flex-row items-center gap-2 w-full text-sm md:text-md">
+            <div className=" pl-4 pb-0.5 flex flex-row items-center gap-2 w-full text-sm md:text-md">
               <Mail size={16} /> Email
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+            <input 
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="text" 
+              className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
           </div>
           <div className="flex flex-col gap-1 sm:w-80 min-w-[300px]">
-            <div className="flex flex-row items-center gap-2 text-sm md:text-md">
+            <div className=" pl-4 pb-0.5 flex flex-row items-center gap-2 text-sm md:text-md">
               <KeyIcon size={16} />
               Password
             </div>
-            <input type="text" className="px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+            <div className="w-full relative">
+              <input 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type={showPassword ? "text" : "password"} 
+              className="w-full px-3 py-2 rounded-lg bg-white outline-none border-[1px] border-[#ababab] dark:bg-[#111111] dark:border-none text-sm md:text-md" />
+              <div
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-[10px] top-0 translate-y-[60%] cursor-pointer"
+              >
+                {
+                  showPassword ? <Eye size={16} /> : <EyeOff size={16} />
+                }
+              </div>
+            </div>
             <div className="text-xs">Forgot your password?</div>
           </div>
 
-          <button className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl hover:bg-blue-600 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]">Sign in</button>
+          <button
+            onClick={() => {
+              submit();
+            }} 
+            className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl hover:bg-blue-600 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]">Sign in</button>
         </div>
       </div>
       </div>
