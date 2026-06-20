@@ -131,62 +131,74 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
         >
           {/* search */}
 
-          {/* profile */}
+          {
+            isAuthenticated ? 
+            <>
+            {/* profile */}
           <div className="relative">
-            <div
-              onClick={() => setShowDetails(!showDetails)}
-              className="w-10 h-10 rounded-full bg-blue-100 dark:bg-linear-to-b from-blue-100 to-blue-200 shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer relative z-10"
-              ref={detailsRef}
-            >
-              <img
-                src={theme === "dark" ? user_dark : user_light}
-                className="w-4 h-4"
-                alt=""
-              />
-            </div>
-            <AnimatePresence>
-              {showDetails && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
-                  animate={{ opacity: 1, height: "auto", y: 0, scale: 1 }}
-                  exit={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
-                  transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
-                  className="absolute top-12 right-0 flex flex-col gap-2 p-1.5 rounded-3xl bg-blue-50 dark:bg-[#3a3a3a]/80 dark:backdrop-blur-xl dark:border dark:border-white/[0.04] dark:shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+                <div
+                  onClick={() => setShowDetails(!showDetails)}
+                  className="w-10 h-10 rounded-full bg-blue-100 dark:bg-linear-to-b from-blue-100 to-blue-200 shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer relative z-10"
+                  ref={detailsRef}
                 >
-                  {/* User Info */}
-                  <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a]  dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
-                    <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
-                      <User size={18} strokeWidth={1.5} />
-                      <span className="truncate">
-                        {localStorage.getItem("username")}
-                      </span>
-                    </div>
-
-                    <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
-                      <Mail size={18} strokeWidth={1.5} />
-                      <span className="truncate text-xs">
-                        {localStorage.getItem("email")}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Logout */}
-                  <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
-                    <div
-                      onClick={() => logoutUser()}
-                      className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 px-4 py-3 transition-all duration-300"
+                  <img
+                    src={theme === "dark" ? user_dark : user_light}
+                    className="w-4 h-4"
+                    alt=""
+                  />
+                </div>
+                <AnimatePresence>
+                  {showDetails && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
+                      animate={{ opacity: 1, height: "auto", y: 0, scale: 1 }}
+                      exit={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
+                      transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+                      className="absolute top-12 right-0 flex flex-col gap-2 p-1.5 rounded-3xl bg-blue-50 dark:bg-[#3a3a3a]/80 dark:backdrop-blur-xl dark:border dark:border-white/[0.04] dark:shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
                     >
-                      <LogOut size={18} strokeWidth={1.5} />
-                      <span>Logout</span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                      {/* User Info */}
+                      <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a]  dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
+                        <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
+                          <User
+                            size={18}
+                            strokeWidth={1.5}
+                          />
+                          <span className="truncate">
+                            {localStorage.getItem("username")}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
+                          <Mail
+                            size={18}
+                            strokeWidth={1.5}
+                          />
+                          <span className="truncate text-xs">
+                            {localStorage.getItem("email")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Logout */}
+                      <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
+                        <div
+                          onClick={() => logoutUser()}
+                          className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 px-4 py-3 transition-all duration-300"
+                        >
+                          <LogOut size={18} strokeWidth={1.5} />
+                          <span>Logout</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
           {/* divider */}
           <div className="h-[40px] w-[0.5px] mx-2 rounded-full bg-[#898989] dark:bg-[#acacac]" />
+          </> : 
+            <></>
+          }
 
           {/* menu */}
           <div
@@ -226,14 +238,20 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
                       {/* User Info */}
                       <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a]  dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
                         <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
-                          <User size={18} strokeWidth={1.5} />
+                          <User
+                            size={18}
+                            strokeWidth={1.5}
+                          />
                           <span className="truncate">
                             {localStorage.getItem("username")}
                           </span>
                         </div>
 
                         <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
-                          <Mail size={18} strokeWidth={1.5} />
+                          <Mail
+                            size={18}
+                            strokeWidth={1.5}
+                          />
                           <span className="truncate text-xs">
                             {localStorage.getItem("email")}
                           </span>
