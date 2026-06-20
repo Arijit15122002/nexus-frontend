@@ -1,10 +1,11 @@
 import axios from "axios";
-import { Eye, EyeOff, KeyIcon, Mail } from "lucide-react";
+import { Eye, EyeOff, KeyIcon, Loader, Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { loginSuccess } from "../redux/slices/authSlice";
 import FetchUserDetails from "../utils/FetchUserDetails";
+import { OrbitProgress } from "react-loading-indicators";
 
 export default function Login() {
   const theme = useSelector((state) => state.theme.theme);
@@ -14,18 +15,23 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const form = { email, password };
+  const [submitting, setSubmitting] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
 
   const submit = async () => {
     
     try{
+      if( email == "" || password == "" ) {
+        alert("Please enter email and password");
+        return;
+      }
+      setShowPassword(false);
+      setSubmitting(true);
       const response = await axios.post("https://nexus-backend-7v2b.onrender.com/auth/login", form);
       const token = response.data.token;
-      console.log("this is triggered")
       dispatch(loginSuccess(token));
       await FetchUserDetails(token, dispatch);
-
       if( token != null ) {
         window.location.href = "/chat";
       }
@@ -133,7 +139,15 @@ export default function Login() {
             onClick={() => {
               submit();
             }} 
-            className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl hover:bg-blue-600 hover:text-white transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]">Sign in</button>
+            className="bg-[#232323] text-[#eeeeee] mt-8 pt-2.5 pb-3 px-20 sm:px-30 rounded-2xl  transition-all duration-300 dark:bg-[#efefef] dark:text-black cursor-pointer min-w-[220px]">
+              {
+                submitting ? 
+                <div className="flex flex-row gap-2 items-center justify-center">
+                  <Loader2 size={18} strokeWidth={2} className="animate-spin mt-0.5"/><span>Signing in...</span>
+                </div> : <><div>Sign in</div></>
+              }
+
+            </button>
         </div>
       </div>
       </div>
