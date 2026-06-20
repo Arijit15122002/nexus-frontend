@@ -20,8 +20,7 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
   const deviceType = useSelector((state) => state.device.deviceType);
   const theme = useSelector((state) => state.theme.theme);
 
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const SPRING = { type: "spring", stiffness: 500, damping: 40 };
+  const isAuthenticated = localStorage.getItem("token") !== null && localStorage.getItem("username") !== null && localStorage.getItem("email") !== null;
 
   const detailsRef = useRef(null);
   useEffect(() => {
