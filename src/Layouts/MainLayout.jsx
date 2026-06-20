@@ -30,9 +30,9 @@ export default function MainLayout() {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className={`${isAuthenticated ? "fixed" : "hidden"} md:hidden fixed bottom-0 left-0 w-full z-20`}>
+      {/* <div className={`${isAuthenticated ? "fixed" : "hidden"} md:hidden fixed bottom-0 left-0 w-full z-20`}>
         <BottomNavigation />
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="flex-1 pt-20">

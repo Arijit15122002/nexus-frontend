@@ -1,31 +1,62 @@
-import { useSelector } from "react-redux";
-import alphabet from "../../icons/alphabet.png";
-import alphabet2 from "../../icons/alphabet2.png";
+import { useDispatch, useSelector } from "react-redux";
+// import alphabet from "../../icons/alphabet.png";
+// import alphabet2 from "../../icons/alphabet2.png";
 import user_light from "../../icons/user_light.png";
 import user_dark from "../../icons/user_dark.png";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { isAction } from "redux";
-import { LogIn, Menu } from "lucide-react";
+import { LogIn, LogOut, Mail, Menu, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { logout } from "../../redux/slices/authSlice";
 
-export default function Navigation({menuOpen, setMenuOpen}) {
-  const [loggedIn, setLoggedIn] = useState(false);
+export default function Navigation({ menuOpen, setMenuOpen }) {
+  // const [loggedIn, setLoggedIn] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
 
   const location = useLocation();
-  const isLoginPage = location.pathname === "/login" || location.pathname === "/register";
+  const isLoginPage =
+    location.pathname === "/login" || location.pathname === "/register";
 
   const deviceType = useSelector((state) => state.device.deviceType);
   const theme = useSelector((state) => state.theme.theme);
 
-  const isAuthenticated = useSelector(
-    (state) => state.auth.isAuthenticated
-  );
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const SPRING = { type: "spring", stiffness: 500, damping: 40 };
+
+  const detailsRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        showDetails &&
+        detailsRef.current &&
+        !detailsRef.current.contains(event.target)
+      ) {
+        setShowDetails(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDetails]);
+
+  const dispatch = useDispatch();
+  const logoutUser = () => {
+    dispatch(logout());
+    window.location.href = "/";
+  };
 
   return (
     <>
-      <div className={`${deviceType == "mobile" ? "justify-end" : " justify-between"} w-full h-full flex flex-row items-center relative`}>
+      <div
+        className={`${deviceType == "mobile" ? "justify-end" : " justify-between"} w-full h-full flex flex-row items-center relative`}
+      >
         {/* icon for phone */}
-        <div className={`${deviceType == "mobile" ? "absolute left-5 " : "hidden"} ${isLoginPage ? "hidden" : "flex"}`}>
+        <div
+          className={`${deviceType == "mobile" ? "absolute left-5 " : "hidden"} ${isLoginPage ? "hidden" : "flex"}`}
+        >
           <svg
             className=""
             xmlns="http://www.w3.org/2000/svg"
@@ -62,7 +93,10 @@ export default function Navigation({menuOpen, setMenuOpen}) {
         </div>
 
         {/* logo */}
-        <div className={`${deviceType == "mobile" ? "hidden" : "flex"} ml-16 md:ml-20 lg:ml-24 items-end h-full rammetto text-4xl px-4 relative transition-all duration-300`}>
+        <NavLink
+          to={isAuthenticated ? "/chat" : "/home2"}
+          className={`${deviceType == "mobile" ? "hidden" : "flex"} ml-16 md:ml-20 lg:ml-24 items-end h-full rammetto text-4xl px-4 relative transition-all duration-300`}
+        >
           {/* {theme == "dark" ? (
             <>
               <img
@@ -80,58 +114,165 @@ export default function Navigation({menuOpen, setMenuOpen}) {
               />
             </>
           )} */}
-          <span className="pl-10 anton font-stretch-200% text-[#343434] dark:text-[#fefefe]">O</span>
+          <span className="pl-10 anton font-stretch-200% text-[#343434] dark:text-[#fefefe]">
+            O
+          </span>
           <span className="anton font-stretch-200% text-[#343434] dark:text-[#fefefe]">
             RKA
           </span>
-        </div>
-
-
+        </NavLink>
 
         {/* register and login section */}
 
-        <div className={deviceType == "mobile" ? "flex flex-row gap-2 pr-6" : "hidden"}>
-          
+        <div
+          className={
+            deviceType == "mobile" ? "flex flex-row gap-2 pr-6" : "hidden"
+          }
+        >
           {/* search */}
 
           {/* profile */}
-          <div className=" bg-blue-100 dark:bg-[#232323] shadow-[0_8px_20px_rgba(0,0,0,0.1)] p-2.5 rounded-full">
-          <img 
-            src={theme == "dark" ? user_dark : user_light} 
-            className="w-4 h-4" alt="" />
+          <div className="relative">
+            <div
+              onClick={() => setShowDetails(!showDetails)}
+              className="w-10 h-10 rounded-full bg-blue-100 dark:bg-linear-to-b from-blue-100 to-blue-200 shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer relative z-10"
+              ref={detailsRef}
+            >
+              <img
+                src={theme === "dark" ? user_dark : user_light}
+                className="w-4 h-4"
+                alt=""
+              />
+            </div>
+            <AnimatePresence>
+              {showDetails && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
+                  animate={{ opacity: 1, height: "auto", y: 0, scale: 1 }}
+                  exit={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
+                  transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+                  className="absolute top-12 right-0 flex flex-col gap-2 p-1.5 rounded-3xl bg-blue-50 dark:bg-[#3a3a3a]/80 dark:backdrop-blur-xl dark:border dark:border-white/[0.04] dark:shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+                >
+                  {/* User Info */}
+                  <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a]  dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
+                    <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
+                      <User size={18} strokeWidth={1.5} />
+                      <span className="truncate">
+                        {localStorage.getItem("username")}
+                      </span>
+                    </div>
+
+                    <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
+                      <Mail size={18} strokeWidth={1.5} />
+                      <span className="truncate text-xs">
+                        {localStorage.getItem("email")}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Logout */}
+                  <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
+                    <div
+                      onClick={() => logoutUser()}
+                      className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 px-4 py-3 transition-all duration-300"
+                    >
+                      <LogOut size={18} strokeWidth={1.5} />
+                      <span>Logout</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* divider */}
-          <div className="h-[40px] w-[0.5px] mx-2 rounded-full bg-[#898989] dark:bg-[#acacac]"/>
+          <div className="h-[40px] w-[0.5px] mx-2 rounded-full bg-[#898989] dark:bg-[#acacac]" />
 
           {/* menu */}
-          <div className="p-2.5 rounded-full bg-[#fafafa] dark:bg-transparent dark:text-white shadow-[0_8px_20px_rgba(0,0,0,0.1)] cursor-pointer" onClick={() => setMenuOpen(true)}>
-            <Menu size={18} strokeWidth={0.8}/>
+          <div
+            className="p-3 rounded-full bg-[#fafafa] dark:bg-transparent dark:text-white shadow-[0_8px_20px_rgba(0,0,0,0.1)] cursor-pointer"
+            onClick={() => setMenuOpen(true)}
+          >
+            <Menu size={18} strokeWidth={0.8} />
           </div>
-
         </div>
 
-        <div className={`${deviceType == "mobile" ? "hidden" : "flex flex-row gap-2"} mx-10`}>
-        {
-          isAuthenticated ? 
-          <><div className=" bg-blue-100 dark:bg-[#232323] shadow-[0_8px_20px_rgba(0,0,0,0.1)] p-2.5 rounded-full">
-          <img 
-            src={theme == "dark" ? user_dark : user_light} 
-            className="w-4 h-4" alt="" />
-          </div></> : 
-          <><div 
-        className="flex flex-row gap-2 mr-10 lg:mr-24 z-50">
-        <NavLink to={"/login"} className={`${isLoginPage ? "hidden" : "flex"} group flex-row justify-center items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 text-white border border-blue-400/20 shadow-[0_8px_50px_rgba(59,130,246,0.2)] transition-all duration-300 hover:shadow-[0_15px_80px_rgba(59,130,246,0.5)]`}>
-            <LogIn
-              size={18}
-              className="transition-transform duration-300 group-hover:translate-x-0.5"
-            />
-            <span className="font-extralight anton text-sm tracking-wider">
-              Login
-            </span>
-          </NavLink>
-        </div></>
-        }
+        <div
+          className={`${deviceType == "mobile" ? "hidden" : "flex flex-row gap-2"} mx-10`}
+        >
+          {isAuthenticated ? (
+            <>
+              <div className="relative">
+                <div
+                  onClick={() => setShowDetails(!showDetails)}
+                  className="w-10 h-10 rounded-full bg-blue-100 dark:bg-linear-to-b from-blue-100 to-blue-200 shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer relative z-10"
+                  ref={detailsRef}
+                >
+                  <img
+                    src={theme === "dark" ? user_dark : user_light}
+                    className="w-4 h-4"
+                    alt=""
+                  />
+                </div>
+                <AnimatePresence>
+                  {showDetails && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
+                      animate={{ opacity: 1, height: "auto", y: 0, scale: 1 }}
+                      exit={{ opacity: 0, height: 0, y: -4, scale: 0.96 }}
+                      transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
+                      className="absolute top-12 right-0 flex flex-col gap-2 p-1.5 rounded-3xl bg-blue-50 dark:bg-[#3a3a3a]/80 dark:backdrop-blur-xl dark:border dark:border-white/[0.04] dark:shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+                    >
+                      {/* User Info */}
+                      <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a]  dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
+                        <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
+                          <User size={18} strokeWidth={1.5} />
+                          <span className="truncate">
+                            {localStorage.getItem("username")}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-sky-900 dark:text-[#efefef] hover:bg-white dark:hover:bg-white/[0.06] hover:text-sky-700 dark:hover:text-white px-4 py-3 transition-all duration-300">
+                          <Mail size={18} strokeWidth={1.5} />
+                          <span className="truncate text-xs">
+                            {localStorage.getItem("email")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Logout */}
+                      <div className="p-1.5 text-sm font-medium text-gray-900 dark:text-gray-100 exo flex flex-col gap-2 bg-blue-100 dark:bg-[#1a1a1a] dark:border dark:border-white/[0.05] dark:shadow-[0_15px_40px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.05)] rounded-[19px] overflow-hidden min-w-[220px]">
+                        <div
+                          onClick={() => logoutUser()}
+                          className="flex flex-row gap-3 items-center justify-start hover:cursor-pointer rounded-[14px] text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 px-4 py-3 transition-all duration-300"
+                        >
+                          <LogOut size={18} strokeWidth={1.5} />
+                          <span>Logout</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-row gap-2 mr-10 lg:mr-24 z-50">
+                <NavLink
+                  to={"/login"}
+                  className={`${isLoginPage ? "hidden" : "flex"} group flex-row justify-center items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-500 text-white border border-blue-400/20 shadow-[0_8px_50px_rgba(59,130,246,0.2)] transition-all duration-300 hover:shadow-[0_15px_80px_rgba(59,130,246,0.5)]`}
+                >
+                  <LogIn
+                    size={18}
+                    className="transition-transform duration-300 group-hover:translate-x-0.5"
+                  />
+                  <span className="font-extralight anton text-sm tracking-wider">
+                    Login
+                  </span>
+                </NavLink>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

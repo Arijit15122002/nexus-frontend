@@ -5,8 +5,8 @@ import MainLayout from "./Layouts/MainLayout.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeTheme } from "./redux/slices/themeSlice.js";
 import DeviceDetector from "./utils/DeviceDetector.jsx";
+import Home2 from "./pages/Home2.jsx";
 
-const Home2 = lazy(() => import("./pages/Home2.jsx"));
 const Login = lazy(() => import("./pages/Login.jsx"));
 const Register = lazy(() => import("./pages/Register.jsx"));
 const Chat = lazy(() => import("./pages/Chat.jsx"));

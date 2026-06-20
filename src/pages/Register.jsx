@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { loginSuccess } from '../redux/slices/authSlice';
+import FetchUserDetails from "../utils/FetchUserDetails";
 
 export default function Register() {
 
@@ -27,6 +28,7 @@ export default function Register() {
       console.log(token);
 
       dispatch(loginSuccess(token));
+      FetchUserDetails(token);
       if( token != null ) {
         window.location.href = "/chat";
       }

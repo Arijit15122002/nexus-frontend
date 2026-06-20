@@ -1,9 +1,10 @@
 import axios from "axios";
-import { Eye, EyeClosed, EyeOff, KeyIcon, Mail } from "lucide-react";
+import { Eye, EyeOff, KeyIcon, Mail } from "lucide-react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { loginSuccess } from "../redux/slices/authSlice";
+import FetchUserDetails from "../utils/FetchUserDetails";
 
 export default function Login() {
   const theme = useSelector((state) => state.theme.theme);
@@ -21,14 +22,18 @@ export default function Login() {
     try{
       const response = await axios.post("https://nexus-backend-7v2b.onrender.com/auth/login", form);
       const token = response.data.token;
-
+      console.log("this is triggered")
       dispatch(loginSuccess(token));
+      await FetchUserDetails(token, dispatch);
+
       if( token != null ) {
         window.location.href = "/chat";
       }
       
     } catch (error) {
       console.log(error);
+    console.log(error.response);
+    console.log(error.response?.data);
     }
     
   }
