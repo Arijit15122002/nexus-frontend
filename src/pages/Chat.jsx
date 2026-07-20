@@ -1,17 +1,21 @@
 import { useSelector } from "react-redux";
 import SplitText from "../components2/Chat/SplitText/SplitText";
-import React, { useState } from "react";
-import TextType from "../components2/Chat/TextType/TextType";
+import { useState, useRef, useEffect } from "react";
 import { TypeAnimation } from "react-type-animation";
-import { ArrowRight, Plus } from "lucide-react";
+import { Plus, SendHorizonal } from "lucide-react";
 import axios from "axios";
 
 export default function Chat() {
   const username = useSelector((state) => state.auth.username);
   const token = useSelector((state) => state.auth.token);
+  const theme = useSelector((state) => state.theme.theme);
 
   const [attachFileOpen, setAttachFileOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const textareaRef = useRef(null);
+
+  const MAX_HEIGHT = 200; // px, tweak as needed
+  const MIN_HEIGHT = 28; // px, matches your old input's rough height
 
   const handleSendPrompt = async (message) => {
     try {
@@ -33,10 +37,45 @@ export default function Chat() {
     }
   };
 
+  const resetTextareaHeight = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = `${MIN_HEIGHT}px`;
+    }
+  };
+
+  const autoResize = () => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto"; // shrink first so it can shrink back down too
+    const newHeight = Math.min(el.scrollHeight, MAX_HEIGHT);
+    el.style.height = `${newHeight}px`;
+    el.style.overflowY = el.scrollHeight > MAX_HEIGHT ? "auto" : "hidden";
+  };
+
+  useEffect(() => {
+    autoResize();
+  }, [message]);
+
+  const sendMessage = () => {
+    if (message.trim() !== "") {
+      handleSendPrompt(message);
+      setMessage("");
+      resetTextareaHeight();
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // stop the newline from being inserted
+      sendMessage();
+    }
+    // Shift+Enter falls through and lets the textarea insert a newline naturally
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center justify-center relative">
       {/* prompt input */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] flex flex-row gap-2 justify-center items-center">
+      {/* <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] flex flex-row gap-2 justify-center items-end">
         <div
           className={`transition-transform duration-300 ${attachFileOpen ? "bg-red-600" : "bg-orange-500"} p-3 rounded-2xl cursor-pointer`}
           onClick={() => setAttachFileOpen(!attachFileOpen)}
@@ -47,22 +86,64 @@ export default function Chat() {
             className={`${attachFileOpen ? "rotate-135" : "rotate-0"} transition-transform duration-300 text-white`}
           />
         </div>
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Ask ORKA anything..."
-          className="w-[90%] max-w-3xl px-5 py-4 rounded-3xl bg-[#dedede] dark:bg-[#111111] dark:text-white border border-[#dcdcdc] dark:border-[#3a3a3a] outline-none exo"
-        />
+
+        <div className="w-[90%] max-w-3xl rounded-3xl bg-[#dedede] dark:bg-[#111111] border border-[#dcdcdc] dark:border-[#3a3a3a] overflow-hidden flex items-center justify-center">
+          <textarea
+            ref={textareaRef}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask ORKA anything..."
+            rows={1}
+            style={{ height: `${MIN_HEIGHT}px`, maxHeight: `${MAX_HEIGHT}px` }}
+            className="w-full px-5 py-4 bg-transparent dark:text-white outline-none exo resize-none leading-relaxed custom-scrollbar"
+          />
+        </div>
+
         <div
           className="p-3 bg-blue-600 text-white rounded-2xl cursor-pointer"
-          onClick={() => {
-            if (message != "") {
-              handleSendPrompt(message);
-            }
-          }}
+          onClick={sendMessage}
         >
           <ArrowRight size={20} strokeWidth={3} />
+        </div>
+      </div> */}
+      <div className="absolute w-full h-auto bottom-6 flex flex-row items-center justify-center">
+        <div className="w-[90%] max-w-[700px] px-3 py-2 rounded-3xl dark:bg-[#343434] bg-[#efefef] border border-[0.5px] border-[#cdcdcd] dark:border-[#454545] flex flex-col gap-3 items-center justify-center transition-all duration-300">
+          <div className="w-full flex items-center justify-center">
+            <textarea
+              ref={textareaRef}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask ORKA anything..."
+              rows={1}
+              style={{
+                height: `${MIN_HEIGHT}px`,
+                maxHeight: `${MAX_HEIGHT}px`,
+              }}
+              className="w-full px-3 py-2 bg-transparent text-sm dark:text-white outline-none exo resize-none leading-relaxed custom-scrollbar "
+            />
+          </div>
+
+          <div className="px-4 w-full flex flex-row items-center justify-between">
+            <div className="p-2 rounded-xl dark:bg-[#111111] bg-[#dddddd]" onClick={() => setAttachFileOpen(!attachFileOpen)}>
+              <Plus
+                size={18}
+                className={`${theme == "dark" ? "text-[#fefefe]" : "text-[#111111]"}`}
+              />
+            </div>
+            <div className="flex flex-row items-center justify-center gap-4">
+              <div className="exo text-xs tracking-wider text-[#787878]">
+                Orka - v1
+              </div>
+              <div
+                className="p-3 rounded-2xl bg-orange-400 text-white cursor-pointer hover:scale-105 transition-all duration-300"
+                onClick={sendMessage}
+              >
+                <SendHorizonal size={15} />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -79,7 +160,6 @@ export default function Chat() {
           threshold={0.1}
           rootMargin="-100px"
           textAlign="center"
-          // onLetterAnimationComplete={}
           showCallback
         />
 
