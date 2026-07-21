@@ -20,7 +20,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../../redux/slices/authSlice";
 import { FetchConversationMessages } from "../../utils/FetchUserData";
-
+import { clearMessages } from "../../redux/slices/messageSlice";
+import { clearConversations } from "../../redux/slices/conversationSlice";
 
 export default function Navigation({ setMenuOpen }) {
   // const [loggedIn, setLoggedIn] = useState(false);
@@ -71,12 +72,14 @@ export default function Navigation({ setMenuOpen }) {
   const conversations = useSelector(
     (state) => state.conversation.conversations,
   );
-  const currentConversationId = useSelector((state) => state.message.conversationId)
+  const currentConversationId = useSelector(
+    (state) => state.message.conversationId,
+  );
 
   const handleClickConversation = (id) => {
-      setConversationPanelOpen(false)
-      FetchConversationMessages(token, id, dispatch);
-    };
+    setConversationPanelOpen(false);
+    FetchConversationMessages(token, id, dispatch);
+  };
 
   return (
     <>
@@ -326,31 +329,21 @@ export default function Navigation({ setMenuOpen }) {
       <div
         className={`${sidePanelOpen ? "translate-x-0" : "-translate-x-full"} absolute h-[100svh] w-[60svw] left-0 top-0 flex items-center z-10 duration-300 transition-all`}
         onClick={() => {
-          if( conversationPanelOpen ) setConversationPanelOpen(false)
-          setSidePanelOpen(false)
+          if (conversationPanelOpen) setConversationPanelOpen(false);
+          setSidePanelOpen(false);
         }}
       >
         <div className="h-auto bg-[#eeeeee] dark:bg-[#080808] rounded-r-3xl shadow shadow-xl shadow-[#232323]/10 z-10">
           <div className="px-4 py-6 flex flex-col gap-4">
             {/* new chat */}
-            <NavLink
-              to="/new-chat"
-              className={({ isActive }) =>
-                `relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300 bg-orange-400
-    ${isActive ? "bg-orange-500 shadow-2xl shadow-orange-600" : "hover:bg-orange-500"}`
-              }
+            <div 
+              className="relative h-10 w-10 flex justify-center items-center rounded-xl bg-orange-400 hover:bg-orange-500 transition-all duration-300 cursor-pointer"
+              onClick={() => {
+                dispatch(clearMessages())
+              }}
             >
-              {({ isActive }) => (
-                <>
-                  {isActive && (
-                    <div className="absolute -left-3 h-6 w-1 rounded-full bg-orange-500" />
-                  )}
-
-                  <Plus className={`h-4 w-4 text-white`} />
-                </>
-              )}
-            </NavLink>
-
+              <Plus className="h-4 w-4 text-white" />
+            </div>
             {/* home */}
             <NavLink
               to="/"
@@ -398,8 +391,8 @@ export default function Navigation({ setMenuOpen }) {
             {/* libary */}
             <div
               onClick={(e) => {
-                e.stopPropagation()
-                setConversationPanelOpen(!conversationPanelOpen)
+                e.stopPropagation();
+                setConversationPanelOpen(!conversationPanelOpen);
               }}
               className={`relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300 cursor-pointer
     ${
@@ -483,9 +476,9 @@ export default function Navigation({ setMenuOpen }) {
         </div>
 
         <div
-          className={`${conversationPanelOpen ? "translate-x-0 scale-100" : "-translate-x-full scale-0"} duration-300 transition-all absolute left-24 h-[50%] w-[250px] z-0`}
+          className={`${conversationPanelOpen ? "translate-x-0 scale-100" : "-translate-x-full scale-0"} duration-300 transition-all absolute left-24 h-auto w-[250px] z-0`}
         >
-          <div className="h-full w-full p-1 bg-[#efefef] rounded-3xl shadow shadow-2xl">
+          <div className="h-full w-full p-1 bg-[#efefef] dark:bg-[#232323] rounded-2xl shadow shadow-2xl overflow-y-auto custom-scrollbar border border-[1px] border-[#dedede] dark:border-[#111111] shadow shadow-xl dark:shadow-black/50">
             {loading ? (
               <>
                 {Array.from({ length: 17 }).map((_, index) => (
@@ -503,7 +496,7 @@ export default function Navigation({ setMenuOpen }) {
                   {conversations.map((conversation) => (
                     <div
                       key={conversation.id}
-                      className={`${currentConversationId === conversation.id ? "bg-white/70 dark:bg-black/50" : "hover:bg-white/50 dark:hover:bg-black/30"} p-2 rounded-lg cursor-pointer truncate rounded-xl exo text-xs md:text-sm text-[#454545] dark:text-[#efefef] transition-all duration-300 overflow-y-auto custom-scrollbar mb-2`}
+                      className={`${currentConversationId === conversation.id ? "bg-white/70 dark:bg-black/50" : "hover:bg-white/50 dark:hover:bg-black/30"} p-2 rounded-xl cursor-pointer truncate rounded-xl exo text-xs md:text-sm text-[#454545] dark:text-[#efefef] transition-all duration-300 overflow-y-auto custom-scrollbar mt-1`}
                       onClick={() => handleClickConversation(conversation.id)}
                     >
                       {conversation.title}

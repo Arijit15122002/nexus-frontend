@@ -4,6 +4,8 @@ import { NavLink } from "react-router-dom";
 import ThemeToggleButton from "../../components/ThemeToggleButton";
 import { useState } from "react";
 import { FetchConversationMessages } from "../../utils/FetchUserData";
+import { clearMessages } from "../../redux/slices/messageSlice";
+import { clearConversations } from "../../redux/slices/conversationSlice";
 
 export default function SideNavigation() {
   const token = useSelector((state) => state.auth.token);
@@ -12,13 +14,15 @@ export default function SideNavigation() {
   const conversations = useSelector(
     (state) => state.conversation.conversations,
   );
-  const currentConversationId = useSelector((state) => state.message.conversationId)
+  const currentConversationId = useSelector(
+    (state) => state.message.conversationId,
+  );
   const dispatch = useDispatch();
 
   const [conversationPanelOpen, setConversationPanelOpen] = useState(false);
 
   const handleClickConversation = (id) => {
-    setConversationPanelOpen(false)
+    setConversationPanelOpen(false);
     FetchConversationMessages(token, id, dispatch);
   };
 
@@ -65,23 +69,14 @@ export default function SideNavigation() {
       {/* navigations */}
       <div className="py-6 flex flex-col gap-4">
         {/* new chat */}
-        <NavLink
-          to="/new-chat"
-          className={({ isActive }) =>
-            `relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300 bg-orange-400
-    ${isActive ? "bg-orange-500 shadow-2xl shadow-orange-600" : "hover:bg-orange-500"}`
-          }
+        <div
+          className="relative h-10 w-10 flex justify-center items-center rounded-xl bg-orange-400 hover:bg-orange-500 transition-all duration-300 cursor-pointer"
+          onClick={() => {
+            dispatch(clearMessages());
+          }}
         >
-          {({ isActive }) => (
-            <>
-              {isActive && (
-                <div className="absolute -left-3 h-6 w-1 rounded-full bg-orange-500" />
-              )}
-
-              <Plus className={`h-4 w-4 text-white`} />
-            </>
-          )}
-        </NavLink>
+          <Plus className="h-4 w-4 text-white" />
+        </div>
 
         {/* home */}
         <NavLink
@@ -258,7 +253,9 @@ export default function SideNavigation() {
             ) : (
               <>
                 <div className="flex flex-col">
-                  <div className="text-lg exo font-bold tracking-wider px-2 mt-2 mb-4 text-[#ababab]">Recent Activity</div>
+                  <div className="text-lg exo font-bold tracking-wider px-2 mt-2 mb-4 text-[#ababab]">
+                    Recent Activity
+                  </div>
                   {conversations.map((conversation) => (
                     <div
                       key={conversation.id}

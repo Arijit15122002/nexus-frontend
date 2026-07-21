@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Copy, Check, Bot, User, UserRound, ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
+import { Copy, Check, ThumbsUp, ThumbsDown, RotateCcw } from "lucide-react";
+import { useSelector } from "react-redux";
 
 // Parses "FILE: path\nLANGUAGE: lang\n\n<content>" into structured parts.
 // Falls back to plain text if the message doesn't match that shape.
@@ -97,10 +98,9 @@ function ChatBubble({ message }) {
           isUser ? "flex-row-reverse" : "flex-row"
         }`}
       >
-
         {/* content */}
         <div className="flex flex-col gap-1 min-w-0">
-          {(parsed.isFile && language !== "text" && language !== "english") ? (
+          {parsed.isFile && language !== "text" && language !== "english" ? (
             <CodeBlock
               filePath={parsed.filePath}
               language={parsed.language}
@@ -116,10 +116,11 @@ function ChatBubble({ message }) {
             >
               {parsed.body}
               {!isUser && (
-                <div
-                  className="w-full h-12 flex flex-row items-end gap-2 justify-end "
-                >
-                  <div className={`${copied ? "bg-green-200" : "hover:bg-[#dedede]"} p-2 rounded-lg cursor-pointer transition-all duration-300`} onClick={() => handleCopy()}>
+                <div className="w-full h-12 flex flex-row items-end gap-2 justify-end ">
+                  <div
+                    className={`${copied ? "bg-green-200" : "hover:bg-[#dedede]"} p-2 rounded-lg cursor-pointer transition-all duration-300`}
+                    onClick={() => handleCopy()}
+                  >
                     {copied ? (
                       <Check size={14} className="text-green-700" />
                     ) : (
@@ -130,13 +131,13 @@ function ChatBubble({ message }) {
                     )}
                   </div>
                   <div className="p-2 rounded-lg cursor-pointer hover:bg-[#dedede]">
-                    <ThumbsUp size={14}/>
+                    <ThumbsUp size={14} />
                   </div>
                   <div className="p-2 rounded-lg cursor-pointer hover:bg-[#dedede]">
-                    <ThumbsDown size={14}/>
+                    <ThumbsDown size={14} />
                   </div>
                   <div className="p-2 rounded-lg cursor-pointer hover:bg-[#dedede]">
-                    <RotateCcw size={14}/>
+                    <RotateCcw size={14} />
                   </div>
                 </div>
               )}
@@ -160,6 +161,9 @@ function ChatBubble({ message }) {
 }
 
 function MessageList({ messages }) {
+  const currentConversationId = useSelector(
+    (state) => state.message.conversationId,
+  );
   const bottomRef = useRef(null);
 
   const sortedMessages = useMemo(() => {
@@ -168,11 +172,15 @@ function MessageList({ messages }) {
     );
   }, [messages]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [sortedMessages.length]);
+  const lastMessageContent = sortedMessages[sortedMessages.length - 1]?.content;
 
-  console.log(messages);
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({
+        behavior: "instant",
+      });
+    });
+  }, [sortedMessages.length, lastMessageContent, currentConversationId]);
 
   return (
     <div className="w-full h-full overflow-y-auto custom-scrollbar flex flex-col items-center gap-5 py-6">
@@ -183,7 +191,7 @@ function MessageList({ messages }) {
         ))}
         <div className="w-full h-[150px]"></div>
       </div>
-      <div ref={bottomRef}/>
+      <div ref={bottomRef} />
     </div>
   );
 }
