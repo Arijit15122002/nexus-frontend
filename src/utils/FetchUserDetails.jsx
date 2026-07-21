@@ -4,7 +4,7 @@ import { setUser } from "../redux/slices/authSlice";
 const FetchUserDetails = async (token, dispatch) => {
   console.log("It's being triggered");
   const response = await axios.get(
-    "https://nexus-backend-7v2b.onrender.com/user/get-username",
+    `${import.meta.env.VITE_API_BASE_URL}/user/get-username`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

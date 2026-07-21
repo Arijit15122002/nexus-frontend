@@ -1,18 +1,31 @@
-import { Bell, Book, Home, Info, Library, Plus } from "lucide-react";
-import React from "react";
-import { useSelector } from "react-redux";
+import { Bell, Home, Info, Library, Plus } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import ThemeToggleButton from "../../components/ThemeToggleButton";
+import { useState } from "react";
+import { FetchConversationMessages } from "../../utils/FetchUserData";
 
 export default function SideNavigation() {
+  const token = useSelector((state) => state.auth.token);
   const theme = useSelector((state) => state.theme.theme);
+  const loading = useSelector((state) => state.conversation.loading);
+  const conversations = useSelector(
+    (state) => state.conversation.conversations,
+  );
+  const currentConversationId = useSelector((state) => state.message.conversationId)
+  const dispatch = useDispatch();
+
+  const [conversationPanelOpen, setConversationPanelOpen] = useState(false);
+
+  const handleClickConversation = (id) => {
+    setConversationPanelOpen(false)
+    FetchConversationMessages(token, id, dispatch);
+  };
 
   return (
     <div
-      className={`h-full flex flex-col w-[70px] pt-2 pb-6 rounded-2xl items-center justify-between transition-all duration-300 ${
-        theme === "dark"
-          ? "bg-[#171717]"
-          : "bg-[#eeeeee]"
+      className={`relative h-full flex flex-col w-[70px] pt-2 pb-6 rounded-2xl items-center justify-between transition-all duration-300 ${
+        theme === "dark" ? "bg-[#171717]" : "bg-[#efefef]"
       } `}
     >
       {/* logo */}
@@ -115,48 +128,42 @@ export default function SideNavigation() {
         </NavLink>
 
         {/* libary */}
-        <NavLink
-          to="/library"
-          className={({ isActive }) =>
-            `relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300
+        <div
+          onClick={() => setConversationPanelOpen(!conversationPanelOpen)}
+          className={`relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300 cursor-pointer
     ${
-      isActive
+      conversationPanelOpen
         ? theme === "dark"
           ? `
-      bg-[#232323]
-      border border-[#303030]
-      shadow-lg shadow-black/50
-    `
+            bg-[#232323]
+            border border-[#303030]
+            shadow-lg shadow-black/50
+          `
           : `
-      bg-white
-      shadow-2xl shadow-blue-600
-    `
+            bg-white
+            shadow-2xl shadow-blue-600
+          `
         : theme === "dark"
           ? "hover:bg-[#232323]"
           : "hover:bg-white/50"
-    }`
-          }
+    }`}
         >
-          {({ isActive }) => (
-            <>
-              {isActive && (
-                <div className="absolute -left-3 h-6 w-1 rounded-full bg-blue-500 " />
-              )}
-
-              <Library
-                className={`h-4 w-4 transition-all duration-300 ${
-                  isActive
-                    ? theme === "dark"
-                      ? "text-white"
-                      : "text-blue-500"
-                    : theme === "dark"
-                      ? "text-zinc-400"
-                      : "text-zinc-500"
-                }`}
-              />
-            </>
+          {conversationPanelOpen && (
+            <div className="absolute -left-3 h-6 w-1 rounded-full bg-blue-500" />
           )}
-        </NavLink>
+
+          <Library
+            className={`h-4 w-4 transition-all duration-300 ${
+              conversationPanelOpen
+                ? theme === "dark"
+                  ? "text-white"
+                  : "text-blue-500"
+                : theme === "dark"
+                  ? "text-zinc-400"
+                  : "text-zinc-500"
+            }`}
+          />
+        </div>
 
         {/* about us */}
         <NavLink
@@ -230,6 +237,41 @@ export default function SideNavigation() {
         {/* theme toggle */}
         <div>
           <ThemeToggleButton />
+        </div>
+        {/* ConversationPanel */}
+        <div
+          className={`${
+            conversationPanelOpen
+              ? "-translate-x-0 opacity-100"
+              : "-translate-x-10 opacity-0 pointer-events-none"
+          } absolute h-full w-[200px] -right-[240px] top-0 transition-all duration-300 p-1 bg-[#efefef] dark:bg-[#343434] border border-[1px] border-[#cdcdcd] dark:border-[#454545] rounded-2xl p-2 shadow shadow-2xl shadow-[rgba(0,0,0,0.1)]`}
+        >
+          <div className="h-full w-full">
+            {loading ? (
+              <>
+                {Array.from({ length: 17 }).map((_, index) => (
+                  <div key={index} className="p-1">
+                    <div className="h-7 w-full rounded-xl bg-white/50 dark:bg-[#4a4a4a] animate-pulse" />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col">
+                  <div className="text-lg exo font-bold tracking-wider px-2 mt-2 mb-4 text-[#ababab]">Recent Activity</div>
+                  {conversations.map((conversation) => (
+                    <div
+                      key={conversation.id}
+                      className={`${currentConversationId === conversation.id ? "bg-white/70 dark:bg-black/50" : ""} p-2 rounded-lg hover:bg-white/50 cursor-pointer truncate rounded-xl exo text-xs md:text-sm text-[#454545] dark:text-[#efefef] transition-all duration-300 overflow-y-auto custom-scrollbar`}
+                      onClick={() => handleClickConversation(conversation.id)}
+                    >
+                      {conversation.title}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

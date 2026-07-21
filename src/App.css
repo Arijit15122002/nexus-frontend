@@ -220,3 +220,8 @@
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background-color: #666666;
 }
+
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE & Edge */
+    scrollbar-width: none; /* Firefox */
+  }

@@ -50,7 +50,7 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
   return (
     <>
       <div
-        className={`${deviceType == "mobile" ? "justify-end" : " justify-between"} w-full h-full flex flex-row items-center relative`}
+        className={`${deviceType == "mobile" ? "justify-end" : " justify-between"} w-full h-full flex flex-row items-center relative bg-linear-to-b from-white via-white/50 to-white/10 dark:from-[#232323]/100 dark:via-[#232323]/50 dark:to-[#232323]/10`}
       >
         {/* icon for phone */}
         <div

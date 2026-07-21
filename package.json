@@ -21,10 +21,13 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-loading-indicators": "^1.0.1",
+    "react-markdown": "^10.1.0",
     "react-redux": "^9.3.0",
     "react-router-dom": "^7.15.1",
+    "react-syntax-highlighter": "^16.1.1",
     "react-type-animation": "^3.2.0",
     "redux": "^5.0.1",
+    "remark-gfm": "^4.0.1",
     "swiper": "^12.1.4",
     "tailwindcss": "^4.3.0"
   },

@@ -18,12 +18,12 @@ export default function MainLayout() {
   return (
     <div className="flex h-[100dvh] bg-white dark:bg-[#232323] transition-all duration-500">
       {/* Top Navigation */}
-      <div className="fixed top-0 left-0 z-20 w-full h-18 md:h-20">
+      <div className="fixed top-0 left-0 z-[999] w-full h-18 md:h-20">
         <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex min-w-20 lg:w-24 justify-end items-center z-30">
+      <div className="hidden md:flex min-w-20 lg:w-24 justify-end items-center z-[999]">
         <div className="w-[70px] h-[93%] rounded-xl flex items-center justify-center">
           <SideNavigation />
         </div>
@@ -35,7 +35,7 @@ export default function MainLayout() {
       </div> */}
 
       {/* Main Content */}
-      <div className="flex-1 pt-20">
+      <div className="flex-1 z-0">
         <Outlet />
       </div>
 

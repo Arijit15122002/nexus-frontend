@@ -1,11 +1,10 @@
 import axios from "axios";
-import { Eye, EyeOff, KeyIcon, Loader, Loader2, Mail } from "lucide-react";
+import { Eye, EyeOff, KeyIcon, Loader2, Mail } from "lucide-react";
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import { loginSuccess } from "../redux/slices/authSlice";
 import FetchUserDetails from "../utils/FetchUserDetails";
-import { OrbitProgress } from "react-loading-indicators";
 
 export default function Login() {
   const theme = useSelector((state) => state.theme.theme);
@@ -16,7 +15,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const form = { email, password };
   const [submitting, setSubmitting] = useState(false);
-
   const [showPassword, setShowPassword] = useState(false);
 
   const submit = async () => {
