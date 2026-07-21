@@ -28,7 +28,7 @@ function CodeBlock({ filePath, language, body }) {
 
   return (
     <div className="w-full rounded-2xl overflow-hidden border border-[#454545]/40 dark:bg-[#1c1c1c] bg-[#f5f5f5]">
-      {language === "text" ? (
+      {language === "text" || language == "english" ? (
         <></>
       ) : (
         <div className="flex items-center justify-between px-4 py-2 dark:bg-[#111111] bg-[#e2e2e2] border-b border-[#454545]/30">
@@ -71,6 +71,7 @@ function ChatBubble({ message }) {
     () => parseMessageContent(message.content),
     [message.content],
   );
+  const language = parsed.language?.toLowerCase();
 
   const [copied, setCopied] = useState(false);
   const handleCopy = async () => {
@@ -96,21 +97,10 @@ function ChatBubble({ message }) {
           isUser ? "flex-row-reverse" : "flex-row"
         }`}
       >
-        {/* avatar */}
-        {/* <div
-          className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-            isUser
-              ? "bg-[#080808] text-white"
-              : //   : "dark:bg-[#343434] bg-[#e2e2e2] dark:text-[#efefef] text-[#232323]"
-                ""
-          }`}
-        >
-          {isUser ? <UserRound size={15} /> : ""}
-        </div> */}
 
         {/* content */}
         <div className="flex flex-col gap-1 min-w-0">
-          {parsed.isFile && parsed.language !== "text" ? (
+          {(parsed.isFile && language !== "text" && language !== "english") ? (
             <CodeBlock
               filePath={parsed.filePath}
               language={parsed.language}
@@ -128,9 +118,8 @@ function ChatBubble({ message }) {
               {!isUser && (
                 <div
                   className="w-full h-12 flex flex-row items-end gap-2 justify-end "
-                  onClick={() => handleCopy()}
                 >
-                  <div className={`${copied ? "bg-green-200" : "hover:bg-[#dedede]"} p-2 rounded-lg cursor-pointer transition-all duration-300`}>
+                  <div className={`${copied ? "bg-green-200" : "hover:bg-[#dedede]"} p-2 rounded-lg cursor-pointer transition-all duration-300`} onClick={() => handleCopy()}>
                     {copied ? (
                       <Check size={14} className="text-green-700" />
                     ) : (
@@ -183,9 +172,12 @@ function MessageList({ messages }) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [sortedMessages.length]);
 
+  console.log(messages);
+
   return (
     <div className="w-full h-full overflow-y-auto custom-scrollbar flex flex-col items-center gap-5 py-6">
       <div className="w-full h-full w-[90%] max-w-[700px]">
+        <div className="w-full h-[100px]"></div>
         {sortedMessages.map((msg) => (
           <ChatBubble key={msg.id} message={msg} />
         ))}

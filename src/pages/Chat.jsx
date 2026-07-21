@@ -3,18 +3,24 @@ import SplitText from "../components2/Chat/SplitText/SplitText";
 import { useState, useRef, useEffect } from "react";
 import { TypeAnimation } from "react-type-animation";
 import { Plus, SendHorizonal } from "lucide-react";
-import axios from "axios";
 import { FetchUserConversations } from "../utils/FetchUserData";
 import MessageList from "../components2/Chat/MessageList";
+import {
+  addMessage,
+  updateMessage,
+  setLoading,
+} from "../redux/slices/messageSlice";
 
 export default function Chat() {
   const username = useSelector((state) => state.auth.username);
   const token = useSelector((state) => state.auth.token);
   const theme = useSelector((state) => state.theme.theme);
+  const conversationId = useSelector((state) => state.message.conversationId);
   const isLoading = useSelector((state) => state.message.loading);
   const messages = useSelector((state) => state.message.messages);
   const dispatch = useDispatch();
-  console.log(messages)
+  console.log(messages);
+  console.log(token)
 
   useEffect(() => {
     if (!token) return;
@@ -30,22 +36,84 @@ export default function Chat() {
   const MIN_HEIGHT = 28; // px, matches your old input's rough height
 
   const handleSendPrompt = async (message) => {
+    const assistantId = crypto.randomUUID();
+    let accumulatedContent = "";
+    let messageStarted = false;
+
+    dispatch(setLoading(true));
+
     try {
-      const response = await axios.post(
+      const response = await fetch(
         "https://nexus-backend-7v2b.onrender.com/api/gemini/chat",
         {
-          message: message,
-        },
-        {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
+          body: JSON.stringify({ message, conversationId }),
         },
       );
 
-      console.log(response.data);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop(); // last entry may be a partial line, save for next chunk
+
+        for (const line of lines) {
+          if (!line.startsWith("data:")) continue;
+
+          const jsonStr = line.slice(5).trim();
+          if (!jsonStr) continue;
+
+          let payload;
+          try {
+            payload = JSON.parse(jsonStr);
+          } catch (e) {
+            console.error("Bad chunk:", jsonStr);
+            continue;
+          }
+
+          if (payload.type === "TEXT") {
+            accumulatedContent += payload.content;
+
+            if (!messageStarted) {
+              messageStarted = true;
+              dispatch(
+                addMessage({
+                  id: assistantId,
+                  role: "ASSISTANT",
+                  content: accumulatedContent,
+                  createdAt: new Date().toISOString(),
+                }),
+              );
+            } else {
+              dispatch(
+                updateMessage({
+                  id: assistantId,
+                  updates: { content: accumulatedContent },
+                }),
+              );
+            }
+          }
+
+          if (payload.type === "COMPLETE" && payload.completed) {
+            // stream finished — nothing else required here
+          }
+        }
+      }
     } catch (error) {
       console.log(error);
+    } finally {
+      dispatch(setLoading(false));
     }
   };
 
@@ -69,11 +137,21 @@ export default function Chat() {
   }, [message]);
 
   const sendMessage = () => {
-    if (message.trim() !== "") {
-      handleSendPrompt(message);
-      setMessage("");
-      resetTextareaHeight();
-    }
+    if (message.trim() === "") return;
+
+    const userMessage = {
+      id: crypto.randomUUID(),
+      role: "USER",
+      content: message,
+      createdAt: new Date().toISOString(),
+    };
+
+    dispatch(addMessage(userMessage));
+
+    handleSendPrompt(message);
+
+    setMessage("");
+    resetTextareaHeight();
   };
 
   const handleKeyDown = (e) => {
@@ -134,44 +212,42 @@ export default function Chat() {
       </div>
 
       <div className="h-full w-full flex flex-col items-center justify-center">
-        {!isLoading && messages.length == 0 ? (
-          <>
-            <div className="flex flex-col gap-2 items-center justify-center">
-              <SplitText
-                text={`Hello ${username}!`}
-                className="-mt-18 text-6xl font-semibold text-center text-[] exo text-[#232323] dark:text-[#efefef]"
-                delay={50}
-                duration={1.25}
-                ease="power3.out"
-                splitType="chars"
-                from={{ opacity: 0, y: 80 }}
-                to={{ opacity: 1, y: 0 }}
-                threshold={0.1}
-                rootMargin="-100px"
-                textAlign="center"
-                showCallback
-              />
+        {messages.length == 0 ? (
+          isLoading ? (
+            <div></div>
+          ) : (
+            <>
+              <div className="flex flex-col gap-2 items-center justify-center">
+                <SplitText
+                  text={`Hello ${username}!`}
+                  className="-mt-18 text-6xl font-semibold text-center text-[] exo text-[#232323] dark:text-[#efefef]"
+                  delay={50}
+                  duration={1.25}
+                  ease="power3.out"
+                  splitType="chars"
+                  from={{ opacity: 0, y: 80 }}
+                  to={{ opacity: 1, y: 0 }}
+                  threshold={0.1}
+                  rootMargin="-100px"
+                  textAlign="center"
+                  showCallback
+                />
 
-              <TypeAnimation
-                sequence={["Welcome to ORKA!  What can I do for you?"]}
-                speed={50}
-                cursor={true}
-                className="text-semibold exo text-[#343434] dark:text-[#7a7a7a]"
-              />
-            </div>
-          </>
+                <TypeAnimation
+                  sequence={["Welcome to ORKA!  What can I do for you?"]}
+                  speed={50}
+                  cursor={true}
+                  className="text-semibold exo text-[#343434] dark:text-[#7a7a7a]"
+                />
+              </div>
+            </>
+          )
         ) : (
           <div className="w-full h-full flex flex-row items-center justify-center">
-            {isLoading ? (
-              <>
-                <div></div>
-              </>
-            ) : (
-                <div className="w-full h-full px-3">
-                  {/* the chats will be shown here */}
-                  <MessageList messages={messages}/>
-                </div>
-            )}
+            <div className="w-full h-full px-3">
+                {/* the chats will be shown here */}
+                <MessageList messages={messages} />
+              </div>
           </div>
         )}
       </div>

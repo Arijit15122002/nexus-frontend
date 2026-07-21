@@ -262,7 +262,7 @@ export default function SideNavigation() {
                   {conversations.map((conversation) => (
                     <div
                       key={conversation.id}
-                      className={`${currentConversationId === conversation.id ? "bg-white/70 dark:bg-black/50" : ""} p-2 rounded-lg hover:bg-white/50 cursor-pointer truncate rounded-xl exo text-xs md:text-sm text-[#454545] dark:text-[#efefef] transition-all duration-300 overflow-y-auto custom-scrollbar`}
+                      className={`${currentConversationId === conversation.id ? "bg-white/70 dark:bg-black/50" : "hover:bg-white/50 dark:hover:bg-black/30"} p-2 rounded-lg cursor-pointer truncate rounded-xl exo text-xs md:text-sm text-[#454545] dark:text-[#efefef] transition-all duration-300 overflow-y-auto custom-scrollbar mb-2`}
                       onClick={() => handleClickConversation(conversation.id)}
                     >
                       {conversation.title}

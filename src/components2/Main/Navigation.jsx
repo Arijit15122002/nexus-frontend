@@ -5,11 +5,24 @@ import user_light from "../../icons/user_light.png";
 import user_dark from "../../icons/user_dark.png";
 import { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { LogIn, LogOut, Mail, Menu, User } from "lucide-react";
+import {
+  ChevronRight,
+  Home,
+  Info,
+  Library,
+  LogIn,
+  LogOut,
+  Mail,
+  Menu,
+  Plus,
+  User,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "../../redux/slices/authSlice";
+import { FetchConversationMessages } from "../../utils/FetchUserData";
 
-export default function Navigation({ menuOpen, setMenuOpen }) {
+
+export default function Navigation({ setMenuOpen }) {
   // const [loggedIn, setLoggedIn] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -20,7 +33,10 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
   const deviceType = useSelector((state) => state.device.deviceType);
   const theme = useSelector((state) => state.theme.theme);
 
-  const isAuthenticated = localStorage.getItem("token") !== null && localStorage.getItem("username") !== null && localStorage.getItem("email") !== null;
+  const isAuthenticated =
+    localStorage.getItem("token") !== null &&
+    localStorage.getItem("username") !== null &&
+    localStorage.getItem("email") !== null;
 
   const detailsRef = useRef(null);
   useEffect(() => {
@@ -47,21 +63,47 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
     window.location.href = "/";
   };
 
+  //Side navigate to menu
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
+  const [conversationPanelOpen, setConversationPanelOpen] = useState(false);
+  const token = useSelector((state) => state.auth.token);
+  const loading = useSelector((state) => state.conversation.loading);
+  const conversations = useSelector(
+    (state) => state.conversation.conversations,
+  );
+  const currentConversationId = useSelector((state) => state.message.conversationId)
+
+  const handleClickConversation = (id) => {
+      setConversationPanelOpen(false)
+      FetchConversationMessages(token, id, dispatch);
+    };
+
   return (
     <>
       <div
-        className={`${deviceType == "mobile" ? "justify-end" : " justify-between"} w-full h-full flex flex-row items-center relative bg-linear-to-b from-white via-white/50 to-white/10 dark:from-[#232323]/100 dark:via-[#232323]/50 dark:to-[#232323]/10`}
+        className={`${deviceType == "mobile" ? "justify-end" : " justify-between"} w-full h-full flex flex-row items-center relative 
+        bg-white/80 dark:bg-[#232323]/80 backdrop-blur-md   md:bg-linear-to-b md:backdrop-blur-none  from-white via-white/85 to-white/70 dark:from-[#232323]/100 dark:via-[#232323]/80 dark:to-[#232323]/60 z-20`}
       >
+        <div className="md:hidden absolute left-2 h-full w-[30px] flex items-center justify-center">
+          <div
+            className="h-[70%] w-full flex items-center justify-center rounded-lg bg-[#efefef] dark:bg-[#343434]"
+            onClick={() => setSidePanelOpen(!sidePanelOpen)}
+          >
+            <ChevronRight
+              className={`${theme == "dark" ? "text-[#cdcdcd]" : ""} ${sidePanelOpen ? "scale-x-[-1]" : "scale-x-[1]"} duration-300 transition-all`}
+            />
+          </div>
+        </div>
         {/* icon for phone */}
         <div
-          className={`${deviceType == "mobile" ? "absolute left-5 " : "hidden"} ${isLoginPage ? "hidden" : "flex"}`}
+          className={`${deviceType == "mobile" ? "absolute left-10 " : "hidden"} ${isLoginPage ? "hidden" : "flex"}`}
         >
           <svg
             className=""
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
-            width="80"
-            height="80"
+            width="60"
+            height="60"
             viewBox="0 0 1024 1024"
           >
             <path
@@ -136,7 +178,7 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
               <div className="relative">
                 <div
                   onClick={() => setShowDetails(!showDetails)}
-                  className="w-10 h-10 rounded-full bg-blue-100 dark:bg-linear-to-b from-blue-100 to-blue-200 shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer relative z-10"
+                  className="w-10 h-10 rounded-full bg-blue-100 dark:bg-linear-to-b from-blue-100 to-blue-200 shadow-[0_8px_20px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer relative z-0"
                   ref={detailsRef}
                 >
                   <img
@@ -278,6 +320,199 @@ export default function Navigation({ menuOpen, setMenuOpen }) {
               </div>
             </>
           )}
+        </div>
+      </div>
+
+      <div
+        className={`${sidePanelOpen ? "translate-x-0" : "-translate-x-full"} absolute h-[100svh] w-[60svw] left-0 top-0 flex items-center z-10 duration-300 transition-all`}
+        onClick={() => {
+          if( conversationPanelOpen ) setConversationPanelOpen(false)
+          setSidePanelOpen(false)
+        }}
+      >
+        <div className="h-auto bg-[#eeeeee] dark:bg-[#080808] rounded-r-3xl shadow shadow-xl shadow-[#232323]/10 z-10">
+          <div className="px-4 py-6 flex flex-col gap-4">
+            {/* new chat */}
+            <NavLink
+              to="/new-chat"
+              className={({ isActive }) =>
+                `relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300 bg-orange-400
+    ${isActive ? "bg-orange-500 shadow-2xl shadow-orange-600" : "hover:bg-orange-500"}`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <div className="absolute -left-3 h-6 w-1 rounded-full bg-orange-500" />
+                  )}
+
+                  <Plus className={`h-4 w-4 text-white`} />
+                </>
+              )}
+            </NavLink>
+
+            {/* home */}
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                `relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300
+    ${
+      isActive
+        ? theme === "dark"
+          ? `
+      bg-[#232323]
+      border border-[#303030]
+      shadow-lg shadow-black/50
+    `
+          : `
+      bg-white
+      shadow-2xl shadow-blue-600
+    `
+        : theme === "dark"
+          ? "hover:bg-[#232323]"
+          : "hover:bg-white/50"
+    }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <div className="absolute -left-3 h-6 w-1 rounded-full bg-blue-500 " />
+                  )}
+
+                  <Home
+                    className={`h-4 w-4 transition-all duration-300 ${
+                      isActive
+                        ? theme === "dark"
+                          ? "text-white"
+                          : "text-blue-500"
+                        : theme === "dark"
+                          ? "text-zinc-400"
+                          : "text-zinc-500"
+                    }`}
+                  />
+                </>
+              )}
+            </NavLink>
+
+            {/* libary */}
+            <div
+              onClick={(e) => {
+                e.stopPropagation()
+                setConversationPanelOpen(!conversationPanelOpen)
+              }}
+              className={`relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300 cursor-pointer
+    ${
+      conversationPanelOpen
+        ? theme === "dark"
+          ? `
+            bg-[#232323]
+            border border-[#303030]
+            shadow-lg shadow-black/50
+          `
+          : `
+            bg-white
+            shadow-2xl shadow-blue-600
+          `
+        : theme === "dark"
+          ? "hover:bg-[#232323]"
+          : "hover:bg-white/50"
+    }`}
+            >
+              {conversationPanelOpen && (
+                <div className="absolute -left-3 h-6 w-1 rounded-full bg-blue-500" />
+              )}
+
+              <Library
+                className={`h-4 w-4 transition-all duration-300 ${
+                  conversationPanelOpen
+                    ? theme === "dark"
+                      ? "text-white"
+                      : "text-blue-500"
+                    : theme === "dark"
+                      ? "text-zinc-400"
+                      : "text-zinc-500"
+                }`}
+              />
+            </div>
+
+            {/* about us */}
+            <NavLink
+              to="/about-us"
+              className={({ isActive }) =>
+                `relative h-10 w-10 flex justify-center items-center rounded-xl transition-all duration-300
+    ${
+      isActive
+        ? theme === "dark"
+          ? `
+      bg-[#232323]
+      border border-[#303030]
+      shadow-lg shadow-black/50
+    `
+          : `
+      bg-white
+      shadow-2xl shadow-blue-600
+    `
+        : theme === "dark"
+          ? "hover:bg-[#232323]"
+          : "hover:bg-white/50"
+    }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <div className="absolute -left-3 h-6 w-1 rounded-full bg-blue-500 " />
+                  )}
+
+                  <Info
+                    className={`h-4 w-4 transition-all duration-300 ${
+                      isActive
+                        ? theme === "dark"
+                          ? "text-white"
+                          : "text-blue-500"
+                        : theme === "dark"
+                          ? "text-zinc-400"
+                          : "text-zinc-500"
+                    }`}
+                  />
+                </>
+              )}
+            </NavLink>
+          </div>
+        </div>
+
+        <div
+          className={`${conversationPanelOpen ? "translate-x-0 scale-100" : "-translate-x-full scale-0"} duration-300 transition-all absolute left-24 h-[50%] w-[250px] z-0`}
+        >
+          <div className="h-full w-full p-1 bg-[#efefef] rounded-3xl shadow shadow-2xl">
+            {loading ? (
+              <>
+                {Array.from({ length: 17 }).map((_, index) => (
+                  <div key={index} className="p-1">
+                    <div className="h-7 w-full rounded-xl bg-white/50 dark:bg-[#4a4a4a] animate-pulse" />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <div className="flex flex-col">
+                  <div className="text-lg exo font-bold tracking-wider px-2 mt-2 mb-4 text-[#ababab]">
+                    Recent Activity
+                  </div>
+                  {conversations.map((conversation) => (
+                    <div
+                      key={conversation.id}
+                      className={`${currentConversationId === conversation.id ? "bg-white/70 dark:bg-black/50" : "hover:bg-white/50 dark:hover:bg-black/30"} p-2 rounded-lg cursor-pointer truncate rounded-xl exo text-xs md:text-sm text-[#454545] dark:text-[#efefef] transition-all duration-300 overflow-y-auto custom-scrollbar mb-2`}
+                      onClick={() => handleClickConversation(conversation.id)}
+                    >
+                      {conversation.title}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </>

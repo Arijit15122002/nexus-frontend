@@ -1,10 +1,9 @@
 import { NavLink, Outlet } from "react-router-dom";
 import SideNavigation from "../components2/Main/SideNavigation.jsx";
 import Navigation from "../components2/Main/Navigation.jsx";
-import BottomNavigation from "../components2/Main/BottomNavigation.jsx";
 import { useSelector } from "react-redux";
 import { useState } from "react";
-import { Cross, LogIn, X } from "lucide-react";
+import { LogIn, X } from "lucide-react";
 import ThemeToggleButtonMobile from "../components2/Main/ThemeToggleButtonMobile.jsx";
 
 export default function MainLayout() {
@@ -13,13 +12,11 @@ export default function MainLayout() {
   const deviceType = useSelector((state) => state.device.deviceType);
   console.log(deviceType);
 
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
   return (
     <div className="flex h-[100dvh] bg-white dark:bg-[#232323] transition-all duration-500">
       {/* Top Navigation */}
-      <div className="fixed top-0 left-0 z-[999] w-full h-18 md:h-20">
-        <Navigation menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <div className="fixed top-0 left-0 z-40 w-full h-18 md:h-20">
+        <Navigation setMenuOpen={setMenuOpen} />
       </div>
 
       {/* Desktop Sidebar */}
@@ -56,7 +53,7 @@ export default function MainLayout() {
             </div>
 
             {/* optioins */}
-            <div className="flex flex-col pt-6 px-10 gap-5 transition-all duration-300 exo">
+            <div className="flex flex-col pt-6 px-10 gap-5 transition-all duration-300 exo z-50">
               <div className=" text-xl tracking-wider px-6 py-3 rounded-xl bg-[#fafafa] dark:bg-[#111111] text-[#343434] dark:text-[#dedede] shadow-[0_8px_40px_rgba(0,0,0,0.07)]" onClick={() => setMenuOpen(false)}>
                 About us
               </div>

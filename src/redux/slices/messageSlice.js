@@ -40,7 +40,26 @@ const messageSlice = createSlice({
       state.last = response.last;
     },
 
+    addMessage: (state, action) => {
+      state.messages.push(action.payload);
+    },
+
+    updateMessage: (state, action) => {
+      const { id, updates } = action.payload;
+
+      const message = state.messages.find((m) => m.id === id);
+
+      if (message) {
+        Object.assign(message, updates);
+      }
+    },
+
+    removeMessage: (state, action) => {
+      state.messages = state.messages.filter((m) => m.id !== action.payload);
+    },
+
     clearMessages: (state) => {
+      state.conversationId = null
       state.messages = [];
 
       state.page = 0;
@@ -55,6 +74,6 @@ const messageSlice = createSlice({
   },
 });
 
-export const { setLoading, setMessages, clearMessages } = messageSlice.actions;
+export const { setLoading, setMessages, addMessage, updateMessage, removeMessage, clearMessages } = messageSlice.actions;
 
 export default messageSlice.reducer;
